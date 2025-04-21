@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { authClient } from "@/auth/auth-client";
 
 export function SignInForm() {
@@ -8,6 +8,36 @@ export function SignInForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [callbackURL, setCallbackURL] = useState("");
+  const [consentURL, setConsentURL] = useState("");
+
+  useEffect(() => {
+    // Extract URL parameters from the current URL
+    const queryParams = new URLSearchParams(window.location.search);
+    const params: Record<string, string> = {};
+    
+    // Extract relevant OAuth parameters
+    const relevantParams = ["client_id", "scope", "redirect_uri", "response_type"];
+    relevantParams.forEach(param => {
+      const value = queryParams.get(param);
+      if (value) params[param] = value;
+    });
+    
+    // Set callback URL from the redirect_uri parameter
+    if (params.redirect_uri) {
+      setCallbackURL(decodeURIComponent(params.redirect_uri));
+    }
+    
+    // Construct consent URL using extracted parameters
+    if (params.client_id && params.scope && params.redirect_uri) {
+      // Get the current origin for auth server
+      const authServerOrigin = window.location.origin;
+      
+      setConsentURL(
+        `${authServerOrigin}/auth/consent?client_id=${params.client_id}&scope=${params.scope}&redirect_uri=${params.redirect_uri}`
+      );
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,15 +48,14 @@ export function SignInForm() {
       const { error } = await authClient.signIn.email({
         email,
         password,
-        callbackURL: "http://localhost:3001/user/callback",
+        callbackURL,
       });
 
       if (error) {
         setError(error.message || "Authentication failed");
       } else {
-        // Redirect to the consent page with the client_id and scope parameters
-        // The actual values will be provided by the OAuth flow
-        window.location.href = "http://localhost:3000/auth/consent?client_id=WKMtfGKOQGxrptsAEVsyARdKRpbbahBB&scope=openid%20profile%20email&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fuser%2Fcallback";
+        // Redirect to the consent page using URL built from original parameters
+        window.location.href = consentURL;
       }
     } catch (err) {
       setError("An unexpected error occurred");
