@@ -17,7 +17,7 @@ export function SignInForm() {
     const params: Record<string, string> = {};
     
     // Extract relevant OAuth parameters
-    const relevantParams = ["client_id", "scope", "redirect_uri", "response_type"];
+    const relevantParams = ["client_id", "scope", "redirect_uri", "response_type", "state"];
     relevantParams.forEach(param => {
       const value = queryParams.get(param);
       if (value) params[param] = value;
