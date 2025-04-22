@@ -3,12 +3,13 @@ import { betterAuth } from "better-auth";
 import { oidcProvider } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import * as schema from '../auth/auth-schema';
+import { expo } from "@better-auth/expo";
 
 export const auth = betterAuth({
   emailAndPassword: {
     enabled: true
   },
-  trustedOrigins: ["http://localhost:3000"],
+  trustedOrigins: ["http://localhost:3000", "myapp://"],
   secret: process.env.BETTER_AUTH_SECRET || "secret",
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -33,7 +34,8 @@ export const auth = betterAuth({
         }
         return claims;
       }
-    })
+    }),
+    expo()
   ]
 });
 
