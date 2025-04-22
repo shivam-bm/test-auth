@@ -34,7 +34,7 @@ export function SignInForm() {
       const authServerOrigin = window.location.origin;
       
       setConsentURL(
-        `${authServerOrigin}/auth/consent?client_id=${params.client_id}&scope=${params.scope}&redirect_uri=${params.redirect_uri}`
+        `${authServerOrigin}/auth/consent?client_id=${params.client_id}&scope=${params.scope}&redirect_uri=${params.redirect_uri}&state=${params.state}`
       );
     }
   }, []);
