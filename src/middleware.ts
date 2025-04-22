@@ -7,10 +7,10 @@ const getAllowedOrigins = (): string[] => {
   
   // Add development origin if in development mode
   if (process.env.NODE_ENV !== 'production') {
-    origins.push('http://localhost:3001');
+    origins.push('http://localhost:3000');
   } else {
     // In production, always allow the Vercel deployment URL
-    origins.push('https://test-auth-one-beta.vercel.app');
+    origins.push('http://localhost:3000');
   }
   
   return origins;

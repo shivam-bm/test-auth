@@ -8,7 +8,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true
   },
-  trustedOrigins: ["http://localhost:3001"],
+  trustedOrigins: ["http://localhost:3000"],
   secret: process.env.BETTER_AUTH_SECRET || "secret",
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -22,7 +22,7 @@ export const auth = betterAuth({
       loginPage: "/sign-in",
       consentPage: "/auth/consent",
       metadata: {
-        issuer: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+        issuer: process.env.NEXT_PUBLIC_APP_URL,
       },
       allowDynamicClientRegistration: true,
       getAdditionalUserInfoClaim: (user, scopes) => {
