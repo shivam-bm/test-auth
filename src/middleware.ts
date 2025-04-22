@@ -8,6 +8,9 @@ const getAllowedOrigins = (): string[] => {
   // Add development origin if in development mode
   if (process.env.NODE_ENV !== 'production') {
     origins.push('http://localhost:3001');
+  } else {
+    // In production, always allow the Vercel deployment URL
+    origins.push('https://test-auth-one-beta.vercel.app');
   }
   
   return origins;
@@ -19,14 +22,14 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Only apply CORS headers for OAuth-related API endpoints
-  if (path.startsWith('/api/auth/oauth2')) {
+  if (path.startsWith('/api/auth/oauth2') || path === '/api/auth/oauth2/register') {
     // Get the origin from the request
     const requestOrigin = request.headers.get('origin');
     const allowedOrigins = getAllowedOrigins();
     
     // Check if the origin is allowed
     const isAllowedOrigin = requestOrigin && allowedOrigins.includes(requestOrigin);
-    const origin = isAllowedOrigin ? requestOrigin : (process.env.NODE_ENV === 'production' ? null : '*');
+    const origin = isAllowedOrigin ? requestOrigin : (process.env.NODE_ENV === 'production' ? allowedOrigins[0] : '*');
     
     // Handle preflight requests
     if (request.method === 'OPTIONS') {
